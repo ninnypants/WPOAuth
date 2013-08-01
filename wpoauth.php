@@ -2,7 +2,7 @@
 /**
  * Basic template class for setting up oAuth keys
  */
-class WP_oAuth {
+class WPOAuth {
 	protected $option_name;
 	protected $auth_url;
 	protected $key;
@@ -29,20 +29,43 @@ class WP_oAuth {
 	 * Setup OAuth page that each instance of the class adds it's request for credentials to
 	 */
 	public function add_oauth_menu(){
-		add_options_page('OAuth Applications', 'OAuth Applications', 'edit_users', 'oauth-applications', 'base_applications_page');
+		add_options_page('OAuth Applications', 'OAuth Applications', 'edit_users', 'wpoauth-applications', array( $this, 'base_applications_page' ) );
 	}
 
-	public function base_applications_page(){}
+	/**
+	 * Output main applications page where keys can be added for each application
+	 * that is instantiated.
+	 * @return void
+	 */
+	public function base_applications_page(){
+		?>
+		<div class="wrap">
+			<h2>WP OAuth Applications</h2>
+			<form method="post" action="<?php echo admin_url( 'options.php' ); ?>">
+				<?php settings_fields('wpoauth-applications'); ?>
+				<?php do_settings_sections('wpoauth-applications'); ?>
+			</form>
+		</div>
+		<?php
+	}
 
+	public function register_settings_section(){
 
+	}
+
+	/**
+	 * Build the auth url to be added to the auth button.
+	 *
+	 * @return string Auth url for the service
+	 */
 	private function build_auth_url(){
 		return add_query_arg(array(
-			'response_type' = 'code',
-			'client_id' = $this->client_id,
-			'redirect_uri' = admin_url('options-general.php'),
+			'response_type' => 'code',
+			'client_id' => $this->client_id,
+			'redirect_uri' => admin_url('options-general.php'),
 		), $this->auth_url);
 	}
 
-	public function get_token(){
+	public function get_token(){}
 
 }
